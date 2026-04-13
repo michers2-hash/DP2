@@ -1,0 +1,539 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:var(--color-background-tertiary);
+  --surface:var(--color-background-primary);
+  --surface2:var(--color-background-secondary);
+  --border:var(--color-border-tertiary);
+  --border2:var(--color-border-secondary);
+  --text:var(--color-text-primary);
+  --text2:var(--color-text-secondary);
+  --text3:var(--color-text-tertiary);
+  --danger:var(--color-text-danger);
+  --danger-bg:var(--color-background-danger);
+  --warn:var(--color-text-warning);
+  --warn-bg:var(--color-background-warning);
+  --ok:var(--color-text-success);
+  --ok-bg:var(--color-background-success);
+  --info:var(--color-text-info);
+  --info-bg:var(--color-background-info);
+  --mono:var(--font-mono);
+  --rad:var(--border-radius-lg);
+  --rad-sm:var(--border-radius-md);
+}
+body{font-family:var(--font-sans);color:var(--text);background:transparent;padding:1rem 0}
+
+.card{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rad);padding:1.25rem}
+.card+.card{margin-top:1rem}
+
+h2{font-size:18px;font-weight:500;margin-bottom:0.5rem}
+h3{font-size:15px;font-weight:500;margin-bottom:0.5rem}
+
+.tabs{display:flex;gap:0;border:0.5px solid var(--border);border-radius:var(--rad-sm);overflow:hidden;margin-bottom:1rem}
+.tab{flex:1;padding:8px 12px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--text2);transition:all .15s;border-right:0.5px solid var(--border)}
+.tab:last-child{border-right:none}
+.tab.active{background:var(--surface2);color:var(--text)}
+
+.input-panel{display:none}
+.input-panel.active{display:block}
+
+.drop-zone{border:1.5px dashed var(--border2);border-radius:var(--rad-sm);padding:2.5rem 1rem;text-align:center;cursor:pointer;transition:all .2s}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--info);background:var(--info-bg)}
+.drop-zone-icon{font-size:28px;margin-bottom:0.5rem}
+.drop-zone p{font-size:13px;color:var(--text2);margin:0}
+.drop-zone small{font-size:11px;color:var(--text3)}
+#fileInput{display:none}
+
+.url-row{display:flex;gap:8px}
+.url-row input{flex:1}
+.url-note{font-size:11px;color:var(--text3);margin-top:6px}
+
+.html-hint{font-size:11px;color:var(--text3);margin-top:6px}
+
+.platform-row{display:flex;gap:6px;margin-bottom:1rem}
+.plat-btn{padding:5px 14px;border-radius:var(--rad-sm);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--border);background:transparent;color:var(--text2);transition:all .15s}
+.plat-btn.active{background:var(--danger-bg);border-color:var(--color-border-danger);color:var(--danger)}
+
+.scan-btn{width:100%;padding:10px;border-radius:var(--rad-sm);font-size:14px;font-weight:500;cursor:pointer;border:none;background:var(--color-text-primary);color:var(--color-background-primary);transition:opacity .15s;margin-top:0.75rem}
+.scan-btn:disabled{opacity:.4;cursor:not-allowed}
+.scan-btn:hover:not(:disabled){opacity:.85}
+
+.scanning-state{display:none;text-align:center;padding:2.5rem 0}
+.scanning-state.active{display:block}
+.scan-spinner{width:40px;height:40px;border:2.5px solid var(--border2);border-top-color:var(--info);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 1rem}
+@keyframes spin{to{transform:rotate(360deg)}}
+.scan-label{font-size:13px;color:var(--text2);margin-bottom:0.5rem}
+.scan-progress-track{height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;margin:0 auto;max-width:300px}
+.scan-progress-fill{height:100%;background:var(--info);border-radius:2px;transition:width .4s}
+.scan-steps{display:flex;flex-direction:column;gap:4px;margin-top:1rem;max-width:300px;margin-left:auto;margin-right:auto}
+.scan-step{font-size:11px;color:var(--text3);font-family:var(--mono);text-align:left}
+.scan-step.done{color:var(--ok)}
+.scan-step.active{color:var(--info)}
+
+.results-section{display:none}
+.results-section.active{display:block}
+
+.metrics-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:1rem}
+.metric-card{background:var(--surface2);border-radius:var(--rad-sm);padding:1rem;text-align:center}
+.metric-label{font-size:11px;color:var(--text3);margin-bottom:6px}
+.metric-val{font-size:26px;font-weight:500}
+.metric-sub{font-size:11px;color:var(--text2);margin-top:2px}
+
+.risk-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:500;margin-bottom:1rem}
+
+.finding-card{border:0.5px solid var(--border);border-radius:var(--rad-sm);margin-bottom:8px;overflow:hidden}
+.finding-header{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background .12s}
+.finding-header:hover{background:var(--surface2)}
+.finding-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.finding-cat{font-size:10px;font-family:var(--mono);font-weight:500;padding:2px 7px;border-radius:3px;flex-shrink:0}
+.finding-title{font-size:13px;font-weight:500;flex:1}
+.finding-sev{font-size:11px;font-weight:500;font-family:var(--mono)}
+.finding-chevron{font-size:12px;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.finding-chevron.open{transform:rotate(180deg)}
+.finding-body{display:none;padding:10px 14px 12px;border-top:0.5px solid var(--border);background:var(--surface2)}
+.finding-body.open{display:block}
+.finding-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px}
+.finding-evidence{background:var(--surface);border:0.5px solid var(--border);border-radius:var(--rad-sm);padding:10px 12px;margin-bottom:8px}
+.finding-evidence-label{font-size:10px;font-weight:500;font-family:var(--mono);margin-bottom:4px}
+.finding-evidence p{font-size:12px;color:var(--text2);line-height:1.5}
+.finding-rec{font-size:12px;line-height:1.6}
+.finding-rec strong{color:var(--ok)}
+.finding-law{font-size:11px;color:var(--info);font-family:var(--mono);margin-top:6px}
+
+.cat-filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.cat-filter{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:0.5px solid var(--border);background:transparent;color:var(--text2);transition:all .15s}
+.cat-filter.active{border-color:var(--color-border-danger);background:var(--danger-bg);color:var(--danger)}
+
+.no-issues{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+
+.preview-thumb{max-width:100%;max-height:200px;border-radius:var(--rad-sm);border:0.5px solid var(--border);margin-top:8px;object-fit:contain}
+
+.export-row{display:flex;gap:8px;margin-top:1rem}
+.export-btn{padding:7px 14px;border-radius:var(--rad-sm);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--border);background:transparent;color:var(--text2);transition:all .15s}
+.export-btn:hover{border-color:var(--border2);color:var(--text)}
+
+.sev-high{color:#A32D2D}
+.sev-mid{color:#633806}
+.sev-low{color:#27500A}
+.sev-high-bg{background:#FCEBEB;color:#A32D2D}
+.sev-mid-bg{background:#FAEEDA;color:#633806}
+.sev-low-bg{background:#EAF3DE;color:#27500A}
+
+.input-section{}
+.input-hint{font-size:12px;color:var(--text3);margin-bottom:1rem;line-height:1.5;padding:10px 12px;background:var(--info-bg);border-radius:var(--rad-sm);border-left:2px solid var(--info)}
+
+.new-scan-btn{padding:8px 16px;border-radius:var(--rad-sm);font-size:13px;font-weight:500;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--text);transition:all .15s}
+.new-scan-btn:hover{background:var(--surface2)}
+</style>
+
+<h2 style="margin-bottom:0.25rem">AI 다크패턴 자동 점검기</h2>
+<p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem">화면 스크린샷 또는 HTML 소스를 입력하면 Claude AI가 금감원 가이드라인 15개 항목을 자동 분석합니다</p>
+
+<div id="inputSection">
+  <div class="card">
+    <div class="platform-row">
+      <button class="plat-btn active" onclick="setPlatform(this,'MTS')">MTS</button>
+      <button class="plat-btn" onclick="setPlatform(this,'HTS')">HTS</button>
+      <button class="plat-btn" onclick="setPlatform(this,'홈페이지')">홈페이지</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('screenshot',this)">스크린샷 업로드</button>
+      <button class="tab" onclick="switchTab('html',this)">HTML 소스 붙여넣기</button>
+      <button class="tab" onclick="switchTab('url',this)">URL 입력</button>
+    </div>
+
+    <div class="input-panel active" id="panel-screenshot">
+      <div class="input-hint">MTS/HTS 앱 또는 웹사이트 화면을 캡처하여 업로드하세요. 여러 장 분석도 가능합니다.</div>
+      <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
+        <div class="drop-zone-icon">⬆</div>
+        <p>클릭하거나 화면을 여기에 드래그하세요</p>
+        <small>PNG, JPG, WebP 지원 · 최대 10MB</small>
+        <div id="imgPreviewWrap"></div>
+      </div>
+      <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+    </div>
+
+    <div class="input-panel" id="panel-html">
+      <div class="input-hint">브라우저에서 F12 → Elements 탭 → 전체 HTML 복사 후 붙여넣기 하세요. 또는 "소스 보기(Ctrl+U)"의 내용을 붙여넣으세요.</div>
+      <textarea id="htmlInput" rows="8" placeholder="&lt;html&gt;...전체 HTML 소스 붙여넣기..." style="width:100%;resize:vertical;font-family:var(--mono);font-size:12px"></textarea>
+      <div class="html-hint">팁: 너무 길면 문제가 의심되는 특정 컴포넌트 코드만 붙여넣어도 됩니다</div>
+    </div>
+
+    <div class="input-panel" id="panel-url">
+      <div class="input-hint">공개 접근 가능한 URL을 입력하세요. 로그인이 필요한 MTS/HTS는 HTML 소스 또는 스크린샷 방식을 이용하세요.</div>
+      <div class="url-row">
+        <input type="text" id="urlInput" placeholder="https://example-bank.com/products/loan" style="width:100%">
+      </div>
+      <div class="url-note">※ 금융사 내부망·앱은 직접 접근 불가 → 스크린샷 방식 권장</div>
+    </div>
+
+    <textarea id="contextInput" rows="2" placeholder="추가 맥락 (선택): 예) 신용대출 신청 화면 3단계, 카드 가입 마지막 동의 페이지..." style="width:100%;margin-top:0.75rem;font-size:13px"></textarea>
+    <button class="scan-btn" id="scanBtn" onclick="startScan()">AI 다크패턴 자동 점검 시작</button>
+  </div>
+</div>
+
+<div class="scanning-state" id="scanningState">
+  <div class="scan-spinner"></div>
+  <div class="scan-label" id="scanLabel">Claude AI가 화면을 분석하고 있습니다...</div>
+  <div class="scan-progress-track"><div class="scan-progress-fill" id="scanProgress" style="width:5%"></div></div>
+  <div class="scan-steps" id="scanSteps"></div>
+</div>
+
+<div class="results-section" id="resultsSection">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+    <div>
+      <h2 style="margin-bottom:4px">점검 결과</h2>
+      <div style="font-size:12px;color:var(--text3);font-family:var(--mono)" id="resultMeta"></div>
+    </div>
+    <button class="new-scan-btn" onclick="resetScan()">+ 새 점검</button>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card"><div class="metric-label">위험도</div><div class="metric-val" id="m-risk">—</div><div class="metric-sub" id="m-risk-sub"></div></div>
+    <div class="metric-card"><div class="metric-label">위반 항목</div><div class="metric-val sev-high" id="m-violations">0</div><div class="metric-sub">즉시 개선 필요</div></div>
+    <div class="metric-card"><div class="metric-label">주의 항목</div><div class="metric-val sev-mid" id="m-warnings">0</div><div class="metric-sub">검토 권고</div></div>
+    <div class="metric-card"><div class="metric-label">점검 항목</div><div class="metric-val" id="m-total">0</div><div class="metric-sub">분석 완료</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:1rem">
+    <h3 style="margin-bottom:0.5rem">AI 종합 의견</h3>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7" id="overallSummary"></p>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;flex-wrap:wrap;gap:8px">
+      <h3 style="margin-bottom:0">발견된 다크패턴 항목</h3>
+      <div class="cat-filter-row" id="catFilters" style="margin-bottom:0"></div>
+    </div>
+    <div id="findingsList"></div>
+  </div>
+
+  <div class="export-row">
+    <button class="export-btn" onclick="copyReport()">리포트 텍스트 복사</button>
+    <button class="export-btn" onclick="sendPrompt('금감원 다크패턴 가이드라인 점검 결과에서 가장 심각한 위반 항목의 개선 방법을 구체적으로 알려줘')">개선 방법 상세 안내 ↗</button>
+  </div>
+</div>
+
+<script>
+let state = {
+  platform: 'MTS',
+  inputMode: 'screenshot',
+  images: [],
+  results: null,
+  filterCat: 'all',
+};
+
+const DARK_PATTERN_SYSTEM = `당신은 금융감독원의 "온라인 금융상품 판매 관련 다크패턴 가이드라인(2025.12)" 전문 분석가입니다.
+주어진 금융 UI 화면(스크린샷 또는 HTML 소스)을 아래 15개 다크패턴 유형에 따라 엄격하게 분석하세요.
+
+[다크패턴 분류 체계]
+오도형:
+- ①설명절차의 과도한 축약: 설명화면·이해확인 단계 생략, 일괄 확인 처리, "예" 사전선택
+- ②속임수 질문: 이중질문, 모호한 답변 선택지, 복잡한 질문 구성으로 착오 유발
+- ③잘못된 계층구조: 가입버튼 강조·거절버튼 비강조, 선택항목 시각 불균형, X버튼 연하게 처리
+- ④특정옵션의 사전선택: 부가서비스·개인정보동의·프리미엄플랜 기본값 체크, 이해여부 "예" 사전선택
+- ⑤허위광고 및 기만적 유인행위: 근거없는 금리비교, "약속한 수익" 단정표현, 조건 미공시 혜택광고
+
+방해형:
+- ①취소·탈퇴 방해: 가입보다 탈퇴 절차 복잡, 탈퇴메뉴 미제공·숨김, 챗봇/전화로만 가능
+- ②숨겨진 정보: 중요정보 자세히보기 뒤에 숨김, 손실위험 작은글씨·흐린색, 스크롤만으로 확인 처리
+- ③가격비교 방해: 동일화면 내 이율 기준 불일치(최저vs최고 혼재), 우대조건 미공시
+- ④클릭 피로감 유발: 불필요한 다단계 클릭, 전체취소 버튼 미제공, 개별 해제 강요
+
+압박형:
+- ①계약과정 중 기습적 광고: 가입절차 중 무관한 부가서비스 팝업, 필수처럼 오인 유발
+- ②반복간섭: 거부 후 동일 팝업 재노출, "다음에하기" 후 재확인 팝업
+- ③감정적 언어사용: "부담스러우세요?", "체험" 등 감정자극 표현으로 유해상품 유도
+- ④감각조작: 선택약관 깜빡임, 색상·크기 조작으로 특정 선택 유도
+- ⑤다른 소비자의 활동 알림: 과장된 가입자 수 표시, 거짓 활동 알림
+
+편취유도형:
+- ①순차공개 가격책정: 최고이율만 첫화면 표시 후 실제 조건 나중 공개, 우대조건 후반 공시
+
+[분석 지침]
+- 실제로 보이는 UI 요소, 텍스트, 버튼, 색상, 크기 차이를 근거로 판단하세요
+- 확실한 증거가 있는 경우만 위반으로 판정하세요
+- 추정/가능성은 "주의"로 분류하세요
+- 발견되지 않은 항목은 결과에서 제외하세요
+
+[응답 형식] 반드시 아래 JSON만 출력하세요. 다른 텍스트 없이:
+{
+  "overallRisk": "고위험|중위험|저위험|양호",
+  "overallSummary": "종합 분석 의견 (2-3문장, 한국어)",
+  "platform": "분석된 화면 유형",
+  "findings": [
+    {
+      "id": "고유ID",
+      "category": "오도형|방해형|압박형|편취유도형",
+      "subtype": "①설명절차의 과도한 축약",
+      "severity": "고|중|저",
+      "title": "발견 항목 제목",
+      "description": "발견된 내용 구체적 설명 (한국어)",
+      "evidence": "화면에서 발견된 구체적 근거",
+      "recommendation": "개선 권고사항",
+      "law": "관련 법령"
+    }
+  ],
+  "clean": ["확인되지 않은 항목들 요약"]
+}`;
+
+function setPlatform(el, p) {
+  state.platform = p;
+  document.querySelectorAll('.plat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function switchTab(mode, el) {
+  state.inputMode = mode;
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.input-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + mode).classList.add('active');
+}
+
+function handleDrag(e, over) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.toggle('drag', over);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dropZone').classList.remove('drag');
+  handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+  state.images = [];
+  document.getElementById('imgPreviewWrap').innerHTML = '';
+  Array.from(files).slice(0, 5).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state.images.push({data: ev.target.result, type: file.type});
+      const img = document.createElement('img');
+      img.className = 'preview-thumb';
+      img.src = ev.target.result;
+      document.getElementById('imgPreviewWrap').appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function updateScanStep(steps, active) {
+  const el = document.getElementById('scanSteps');
+  el.innerHTML = steps.map((s,i) => 
+    `<div class="scan-step ${i < active ? 'done' : i === active ? 'active' : ''}">${i < active ? '✓' : i === active ? '▶' : '○'} ${s}</div>`
+  ).join('');
+}
+
+async function startScan() {
+  const steps = [
+    '입력 데이터 전처리 중',
+    '오도형 패턴 분석 중 (5개 항목)',
+    '방해형 패턴 분석 중 (4개 항목)',
+    '압박형 패턴 분석 중 (5개 항목)',
+    '편취유도형 분석 중 (1개 항목)',
+    '결과 종합 및 리포트 생성 중',
+  ];
+
+  document.getElementById('inputSection').style.display = 'none';
+  document.getElementById('scanningState').classList.add('active');
+
+  let prog = 5;
+  updateScanStep(steps, 0);
+  const progEl = document.getElementById('scanProgress');
+  const labelEl = document.getElementById('scanLabel');
+
+  const progInterval = setInterval(() => {
+    prog = Math.min(prog + 2, 90);
+    progEl.style.width = prog + '%';
+    const stepIdx = Math.floor((prog / 90) * (steps.length - 1));
+    updateScanStep(steps, stepIdx);
+    labelEl.textContent = steps[stepIdx] || steps[steps.length-1];
+  }, 600);
+
+  try {
+    const messages = buildMessages();
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 3000,
+        system: DARK_PATTERN_SYSTEM,
+        messages,
+      })
+    });
+    const data = await resp.json();
+    clearInterval(progInterval);
+    progEl.style.width = '100%';
+    updateScanStep(steps, steps.length);
+
+    const rawText = data.content.map(c => c.text || '').join('');
+    const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('JSON 파싱 실패');
+    state.results = JSON.parse(jsonMatch[0]);
+
+    setTimeout(() => {
+      document.getElementById('scanningState').classList.remove('active');
+      showResults();
+    }, 500);
+
+  } catch(err) {
+    clearInterval(progInterval);
+    document.getElementById('scanningState').classList.remove('active');
+    document.getElementById('inputSection').style.display = 'block';
+    alert('분석 중 오류가 발생했습니다: ' + err.message);
+  }
+}
+
+function buildMessages() {
+  const ctx = document.getElementById('contextInput').value;
+  const ctxText = ctx ? `\n추가 맥락: ${ctx}` : '';
+  const platformText = `점검 대상 플랫폼: ${state.platform}`;
+
+  if (state.inputMode === 'screenshot' && state.images.length > 0) {
+    const content = [];
+    state.images.forEach((img, i) => {
+      const b64 = img.data.split(',')[1];
+      const mtype = img.type || 'image/png';
+      content.push({type:'image', source:{type:'base64', media_type: mtype, data: b64}});
+    });
+    content.push({type:'text', text:`${platformText}${ctxText}\n위 화면들을 금감원 다크패턴 가이드라인에 따라 분석하세요.`});
+    return [{role:'user', content}];
+  }
+
+  if (state.inputMode === 'html') {
+    const html = document.getElementById('htmlInput').value.slice(0, 15000);
+    return [{role:'user', content:`${platformText}${ctxText}\n\n아래 HTML 소스를 분석하세요:\n\`\`\`html\n${html}\n\`\`\``}];
+  }
+
+  const url = document.getElementById('urlInput').value;
+  return [{role:'user', content:`${platformText}${ctxText}\n\n분석 대상 URL: ${url}\n이 URL의 금융 서비스 화면에서 예상되는 다크패턴을 URL 구조와 일반적인 금융 UI 패턴을 기반으로 분석하세요.`}];
+}
+
+function showResults() {
+  const r = state.results;
+  document.getElementById('resultsSection').classList.add('active');
+
+  const riskColors = {고위험:'sev-high', 중위험:'sev-mid', 저위험:'sev-low', 양호:'sev-low'};
+  document.getElementById('m-risk').textContent = r.overallRisk;
+  document.getElementById('m-risk').className = 'metric-val ' + (riskColors[r.overallRisk] || '');
+  document.getElementById('m-risk-sub').textContent = state.platform + ' 종합';
+
+  const highs = r.findings.filter(f => f.severity === '고').length;
+  const mids = r.findings.filter(f => f.severity === '중').length;
+  document.getElementById('m-violations').textContent = highs;
+  document.getElementById('m-warnings').textContent = mids;
+  document.getElementById('m-total').textContent = r.findings.length;
+
+  const now = new Date();
+  document.getElementById('resultMeta').textContent =
+    `${state.platform} · ${now.toLocaleDateString('ko-KR')} ${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})} · 금감원 가이드라인 2025.12 기준`;
+
+  document.getElementById('overallSummary').textContent = r.overallSummary;
+
+  const cats = [...new Set(r.findings.map(f => f.category))];
+  const catFilterEl = document.getElementById('catFilters');
+  catFilterEl.innerHTML = `<button class="cat-filter active" onclick="filterCat('all',this)">전체 (${r.findings.length})</button>` +
+    cats.map(c => `<button class="cat-filter" onclick="filterCat('${c}',this)">${c} (${r.findings.filter(f=>f.category===c).length})</button>`).join('');
+
+  renderFindings();
+}
+
+function filterCat(cat, el) {
+  state.filterCat = cat;
+  document.querySelectorAll('.cat-filter').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderFindings();
+}
+
+function renderFindings() {
+  const r = state.results;
+  const list = state.filterCat === 'all' ? r.findings : r.findings.filter(f => f.category === state.filterCat);
+  const el = document.getElementById('findingsList');
+
+  if (list.length === 0) {
+    el.innerHTML = '<div class="no-issues">선택한 범주에서 발견된 다크패턴이 없습니다.</div>';
+    return;
+  }
+
+  const catDotColors = {오도형:'#E24B4A', 방해형:'#BA7517', 압박형:'#7F77DD', 편취유도형:'#1D9E75'};
+  const catBadgeClass = {오도형:'sev-high-bg', 방해형:'sev-mid-bg', 압박형:'', 편취유도형:''};
+  const catBadgeStyle = {
+    오도형:'background:#FCEBEB;color:#A32D2D',
+    방해형:'background:#FAEEDA;color:#633806',
+    압박형:'background:#EEEDFE;color:#3C3489',
+    편취유도형:'background:#E1F5EE;color:#085041',
+  };
+  const sevLabel = {고:'고위험', 중:'주의', 저:'참고'};
+  const sevClass = {고:'sev-high', 중:'sev-mid', 저:'sev-low'};
+  const sevStyle = {고:'color:#A32D2D', 중:'color:#633806', 저:'color:#27500A'};
+
+  el.innerHTML = list.map((f,i) => `
+    <div class="finding-card">
+      <div class="finding-header" onclick="toggleFinding('f${i}')">
+        <div class="finding-dot" style="background:${catDotColors[f.category]||'#888'}"></div>
+        <span class="finding-cat" style="${catBadgeStyle[f.category]||''}">${f.category}</span>
+        <div class="finding-title">${f.subtype} ${f.title}</div>
+        <span class="finding-sev" style="${sevStyle[f.severity]||''}">${sevLabel[f.severity]||f.severity}</span>
+        <span class="finding-chevron" id="chev-f${i}">▾</span>
+      </div>
+      <div class="finding-body" id="body-f${i}">
+        <div class="finding-desc">${f.description}</div>
+        <div class="finding-evidence">
+          <div class="finding-evidence-label" style="color:#633806">근거 (화면 발견 내용)</div>
+          <p>${f.evidence}</p>
+        </div>
+        <div class="finding-rec"><strong>개선 권고:</strong> ${f.recommendation}</div>
+        <div class="finding-law">${f.law}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleFinding(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+function resetScan() {
+  state.images = [];
+  state.results = null;
+  state.filterCat = 'all';
+  document.getElementById('resultsSection').classList.remove('active');
+  document.getElementById('inputSection').style.display = 'block';
+  document.getElementById('imgPreviewWrap').innerHTML = '';
+  document.getElementById('htmlInput').value = '';
+  document.getElementById('urlInput').value = '';
+  document.getElementById('contextInput').value = '';
+}
+
+function copyReport() {
+  const r = state.results;
+  if (!r) return;
+  const now = new Date();
+  let text = `[AI 다크패턴 자동 점검 결과 보고서]\n`;
+  text += `플랫폼: ${state.platform} | 점검일시: ${now.toLocaleString('ko-KR')}\n`;
+  text += `종합 위험도: ${r.overallRisk} | 발견 항목: ${r.findings.length}건\n`;
+  text += `점검 기준: 금융감독원 온라인 금융상품 판매 다크패턴 가이드라인 (2025.12)\n\n`;
+  text += `[AI 종합 의견]\n${r.overallSummary}\n\n`;
+  text += `[발견된 다크패턴]\n`;
+  r.findings.forEach((f,i) => {
+    text += `\n${i+1}. [${f.category}] ${f.subtype} — ${f.title} (${f.severity}위험)\n`;
+    text += `   ${f.description}\n`;
+    text += `   근거: ${f.evidence}\n`;
+    text += `   개선: ${f.recommendation}\n`;
+    text += `   법령: ${f.law}\n`;
+  });
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    btn.textContent = '복사 완료!';
+    setTimeout(() => btn.textContent = '리포트 텍스트 복사', 2000);
+  });
+}
+</script>
